@@ -107,5 +107,38 @@ class CalculatorTest {
         assertEquals(expected, actual);
     }
 
-}
 
+    @Test
+    @DisplayName("should display error when calculating reciprocal of zero")
+    void testReciprocalOfZero() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(0);
+        calc.pressUnaryOperationKey("1/x");
+
+        String expected = "Error";
+        String actual = calc.readScreen();
+
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    @DisplayName("should start new input after equals key")
+    void testNewInputAfterEquals() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(4);
+        calc.pressBinaryOperationKey("+");
+        calc.pressDigitKey(5);
+        calc.pressEqualsKey();
+        calc.pressDigitKey(2);
+
+        String expected = "2";
+        String actual = calc.readScreen();
+
+        assertEquals(expected, actual);
+    }
+
+
+}
