@@ -14,6 +14,11 @@ public class Calculator {
 
     private String latestOperation = "";
 
+    private boolean isResultShown = false;
+
+    private boolean awaitingSecondOperand = false;
+
+
     /**
      * @return den aktuellen Bildschirminhalt als String
      */
@@ -31,7 +36,11 @@ public class Calculator {
     public void pressDigitKey(int digit) {
         if(digit > 9 || digit < 0) throw new IllegalArgumentException();
 
-        if(screen.equals("0") || latestValue == Double.parseDouble(screen)) screen = "";
+        if(screen.equals("0") || isResultShown || awaitingSecondOperand) {
+            screen = "";
+            isResultShown = false;
+            awaitingSecondOperand = false;
+        }
 
         screen = screen + digit;
     }
@@ -62,6 +71,7 @@ public class Calculator {
     public void pressBinaryOperationKey(String operation)  {
         latestValue = Double.parseDouble(screen);
         latestOperation = operation;
+        awaitingSecondOperand = true;
     }
 
     /**
@@ -77,7 +87,10 @@ public class Calculator {
         var result = switch(operation) {
             case "√" -> Math.sqrt(Double.parseDouble(screen));
             case "%" -> Double.parseDouble(screen) / 100;
-            case "1/x" -> 1 / Double.parseDouble(screen);
+            case "1/x" -> {
+                if(Double.parseDouble(screen) == 0.0) yield Double.NaN;
+                else yield 1 / Double.parseDouble(screen);
+            }
             default -> throw new IllegalArgumentException();
         };
         screen = Double.toString(result);
@@ -129,5 +142,7 @@ public class Calculator {
         if(screen.equals("Infinity")) screen = "Error";
         if(screen.endsWith(".0")) screen = screen.substring(0,screen.length()-2);
         if(screen.contains(".") && screen.length() > 11) screen = screen.substring(0, 10);
+    
+        isResultShown = true;
     }
 }
